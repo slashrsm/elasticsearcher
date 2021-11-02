@@ -159,16 +159,28 @@ class IndicesManager extends AbstractManager
 	public function update($indexName)
 	{
 		$index = $this->getRegistered($indexName);
+        $types = $index->getTypes();
 
-		foreach ($index->getTypes() as $type => $typeBody) {
-			$params = [
-				'index' => $index->getInternalName(),
-				'type'  => $type,
-				'body'  => [$type => $typeBody]
-			];
+        if (isset($types['properties'])) {
+            // ES 7
+            $params = [
+                'index' => $index->getInternalName(),
+                'body'  => ['mappings' => $type],
+            ];
 
-			$this->elasticSearcher->getClient()->indices()->putMapping($params);
-		}
+            $this->elasticSearcher->getClient()->indices()->putMapping($params);
+        } else {
+            // ES 5
+            foreach ($types as $type => $typeBody) {
+                $params = [
+                    'index' => $index->getInternalName(),
+                    'type'  => $type,
+                    'body'  => [$type => $typeBody],
+                ];
+
+                $this->elasticSearcher->getClient()->indices()->putMapping($params);
+            }
+        }
 	}
 
 	/**

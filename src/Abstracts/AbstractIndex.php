@@ -74,6 +74,24 @@ abstract class AbstractIndex
 		return $this->get('mappings');
 	}
 
+    /**
+     * @param array $mappings
+     *
+     * @return array
+     */
+    public function setMappings(array $mappings)
+    {
+        return $this->set('mappings', $mappings);
+    }
+
+    /**
+     * @return array
+     */
+    public function getMappings()
+    {
+        return $this->get('mappings');
+    }
+
 	/**
 	 * @param array $settings
 	 *

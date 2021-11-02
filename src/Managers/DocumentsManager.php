@@ -25,9 +25,12 @@ class DocumentsManager extends AbstractManager
 
 		$params = [
 			'index' => $index->getInternalName(),
-			'type'  => $type,
 			'body'  => $data
 		];
+
+        if ($type) {
+            $params['type']  = $type;
+        }
 
 		// If an ID exists in the data set, use it, otherwise let elasticsearch generate one.
 		if (array_key_exists('id', $data)) {
@@ -51,8 +54,11 @@ class DocumentsManager extends AbstractManager
 		foreach ($data as $item) {
 			$header = [
 				'_index' => $indexName,
-				'_type' => $type,
 			];
+
+            if ($type) {
+                $header['_type'] = $type;
+            }
 
 			if (array_key_exists('id', $item)) {
 				$header['_id'] = $item['id'];
@@ -81,9 +87,12 @@ class DocumentsManager extends AbstractManager
 
 		$params = [
 			'index' => $index->getInternalName(),
-			'type'  => $type,
 			'id'    => $id
 		];
+
+        if ($type) {
+            $params['type'] = $type;
+        }
 
 		return $this->elasticSearcher->getClient()->delete($params);
 	}
@@ -104,12 +113,15 @@ class DocumentsManager extends AbstractManager
 
 		$params = [
 			'index' => $index->getInternalName(),
-			'type'  => $type,
 			'id'    => $id,
 			'body'  => ['doc' => $data]
 		];
 
-		return $this->elasticSearcher->getClient()->update($params);
+        if ($type) {
+            $params['type'] = $type;
+        }
+
+        return $this->elasticSearcher->getClient()->update($params);
 	}
 
 	/**
@@ -125,11 +137,14 @@ class DocumentsManager extends AbstractManager
 
 		$params = [
 			'index' => $index->getInternalName(),
-			'type'  => $type,
 			'id'    => $id,
 		];
 
-		return $this->elasticSearcher->getClient()->exists($params);
+        if ($type) {
+            $params['type'] = $type;
+        }
+
+        return $this->elasticSearcher->getClient()->exists($params);
 	}
 
 	/**
@@ -164,11 +179,14 @@ class DocumentsManager extends AbstractManager
 
 		$params = [
 			'index' => $index->getInternalName(),
-			'type'  => $type,
 			'id'    => $id,
 		];
 
-		return $this->elasticSearcher->getClient()->get($params);
+        if ($type) {
+            $params['type'] = $type;
+        }
+
+        return $this->elasticSearcher->getClient()->get($params);
 	}
 
 	/**
