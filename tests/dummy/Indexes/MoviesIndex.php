@@ -13,11 +13,13 @@ class MoviesIndex extends AbstractIndex
 
 	public function setup()
 	{
-		$this->setMappings([
-			'properties' => [
-				'id' => ['type' => 'integer'],
-				'name' => ['type' => 'text'],
-				'year' => ['type' => 'integer'],
+		$this->setTypes([
+			'movies' => [
+				'properties' => [
+					'id' => ['type' => 'integer'],
+					'name' => ['type' => 'text'],
+					'year' => ['type' => 'integer'],
+				]
 			]
 		]);
 	}

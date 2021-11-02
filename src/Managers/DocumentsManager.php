@@ -16,14 +16,16 @@ class DocumentsManager extends AbstractManager
 	 * @return array
 	 *
 	 * @param string $indexName
+	 * @param string $type
 	 * @param array  $data
 	 */
-	public function index($indexName, array $data)
+	public function index($indexName, $type, array $data)
 	{
 		$index = $this->elasticSearcher->indicesManager()->getRegistered($indexName);
 
 		$params = [
 			'index' => $index->getInternalName(),
+			'type'  => $type,
 			'body'  => $data
 		];
 
@@ -39,15 +41,17 @@ class DocumentsManager extends AbstractManager
 	 * Index a set of documents.
 	 *
 	 * @param string $indexName
+	 * @param string $type
 	 * @param array  $data
 	 */
-	public function bulkIndex($indexName, array $data)
+	public function bulkIndex($indexName, $type, array $data)
 	{
 		$params = ['body' => []];
 
 		foreach ($data as $item) {
 			$header = [
 				'_index' => $indexName,
+				'_type' => $type,
 			];
 
 			if (array_key_exists('id', $item)) {
@@ -55,8 +59,8 @@ class DocumentsManager extends AbstractManager
 			}
 
 			// The bulk operation expects two JSON objects for each item
-			// the first one should describe the operation, index and ID.
-			// The later one is the document body.
+			// the first one should describe the operation, index, type
+			// and ID. The later one is the document body.
 			$params['body'][] = ['index' => $header];
 			$params['body'][] = $item;
 		}
@@ -68,14 +72,16 @@ class DocumentsManager extends AbstractManager
 	 * @return array
 	 *
 	 * @param string $indexName
+	 * @param string $type
 	 * @param string $id
 	 */
-	public function delete($indexName, $id)
+	public function delete($indexName, $type, $id)
 	{
 		$index = $this->elasticSearcher->indicesManager()->getRegistered($indexName);
 
 		$params = [
 			'index' => $index->getInternalName(),
+			'type'  => $type,
 			'id'    => $id
 		];
 
@@ -88,15 +94,17 @@ class DocumentsManager extends AbstractManager
 	 * @return array
 	 *
 	 * @param string $indexName
+	 * @param string $type
 	 * @param string $id
 	 * @param array  $data
 	 */
-	public function update($indexName, $id, array $data)
+	public function update($indexName, $type, $id, array $data)
 	{
 		$index = $this->elasticSearcher->indicesManager()->getRegistered($indexName);
 
 		$params = [
 			'index' => $index->getInternalName(),
+			'type'  => $type,
 			'id'    => $id,
 			'body'  => ['doc' => $data]
 		];
@@ -108,14 +116,16 @@ class DocumentsManager extends AbstractManager
 	 * @return bool
 	 *
 	 * @param string $indexName
+	 * @param string $type
 	 * @param string $id
 	 */
-	public function exists($indexName, $id)
+	public function exists($indexName, $type, $id)
 	{
 		$index = $this->elasticSearcher->indicesManager()->getRegistered($indexName);
 
 		$params = [
 			'index' => $index->getInternalName(),
+			'type'  => $type,
 			'id'    => $id,
 		];
 
@@ -128,15 +138,16 @@ class DocumentsManager extends AbstractManager
 	 * @return array
 	 *
 	 * @param string $indexName
+	 * @param string $type
 	 * @param string $id
 	 * @param array $data
 	 */
-	public function updateOrIndex($indexName, $id, array $data)
+	public function updateOrIndex($indexName, $type, $id, array $data)
 	{
-		if ($this->exists($indexName, $id)) {
-			return $this->update($indexName, $id, $data);
+		if ($this->exists($indexName, $type, $id)) {
+			return $this->update($indexName, $type, $id, $data);
 		} else {
-			return $this->index($indexName, $data);
+			return $this->index($indexName, $type, $data);
 		}
 	}
 
@@ -144,14 +155,16 @@ class DocumentsManager extends AbstractManager
 	 * @return array
 	 *
 	 * @param string $indexName
+	 * @param string $type
 	 * @param string $id
 	 */
-	public function get($indexName, $id)
+	public function get($indexName, $type, $id)
 	{
 		$index = $this->elasticSearcher->indicesManager()->getRegistered($indexName);
 
 		$params = [
 			'index' => $index->getInternalName(),
+			'type'  => $type,
 			'id'    => $id,
 		];
 

@@ -18,10 +18,12 @@ class BooksIndex extends AbstractIndex
 
 	public function setup()
 	{
-		$this->setMappings([
-			'properties' => [
-				'id' => ['type' => 'integer'],
-				'name' => ['type' => 'text'],
+		$this->setTypes([
+			'books' => [
+				'properties' => [
+					'id' => ['type' => 'integer'],
+					'name' => ['type' => 'text'],
+				]
 			]
 		]);
 	}

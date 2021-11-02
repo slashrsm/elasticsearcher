@@ -118,6 +118,24 @@ class IndicesManager extends AbstractManager
 	}
 
 	/**
+	 * @return array
+	 *
+	 * @param string $indexName
+	 * @param string $type
+	 */
+	public function getType($indexName, $type)
+	{
+		$index = $this->getRegistered($indexName);
+
+		$params = [
+			'index' => $index->getInternalName(),
+			'type'  => $type
+		];
+
+		return $this->elasticSearcher->getClient()->indices()->getMapping($params);
+	}
+
+	/**
 	 * @param string $indexName
 	 */
 	public function create($indexName)
@@ -133,7 +151,7 @@ class IndicesManager extends AbstractManager
 	}
 
 	/**
-	 * Update the index. This should be used when wanting to reflect changes
+	 * Update the index and all its types. This should be used when wanting to reflect changes
 	 * in the Index object with the elasticsearch server.
 	 *
 	 * @param string $indexName
@@ -142,10 +160,15 @@ class IndicesManager extends AbstractManager
 	{
 		$index = $this->getRegistered($indexName);
 
-		$this->elasticSearcher->getClient()->indices()->putMapping([
-			'index' => $index->getInternalName(),
-			'body'  => ['mappings' => $index->getMappings()]
-		]);
+		foreach ($index->getTypes() as $type => $typeBody) {
+			$params = [
+				'index' => $index->getInternalName(),
+				'type'  => $type,
+				'body'  => [$type => $typeBody]
+			];
+
+			$this->elasticSearcher->getClient()->indices()->putMapping($params);
+		}
 	}
 
 	/**
@@ -163,6 +186,22 @@ class IndicesManager extends AbstractManager
 	}
 
 	/**
+	 * @param string $indexName
+	 * @param string $type
+	 */
+	public function deleteType($indexName, $type)
+	{
+		$index = $this->getRegistered($indexName);
+
+		$params = [
+			'index' => $index->getInternalName(),
+			'type'  => $type
+		];
+
+		$this->elasticSearcher->getClient()->indices()->deleteMapping($params);
+	}
+
+	/**
 	 * @return bool
 	 *
 	 * @param string $indexName
@@ -176,5 +215,23 @@ class IndicesManager extends AbstractManager
 		];
 
 		return $this->elasticSearcher->getClient()->indices()->exists($params);
+	}
+
+	/**
+	 * @return bool
+	 *
+	 * @param string $indexName
+	 * @param string $type
+	 */
+	public function existsType($indexName, $type)
+	{
+		$index = $this->getRegistered($indexName);
+
+		$params = [
+			'index' => $index->getInternalName(),
+			'type'  => $type
+		];
+
+		return $this->elasticSearcher->getClient()->indices()->existsType($params);
 	}
 }
